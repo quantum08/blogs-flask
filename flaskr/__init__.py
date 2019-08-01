@@ -1,17 +1,14 @@
 import os
+
 from flask import Flask
 
-def create_app(test_config = None):
 
-    #create and configure the create_app
-
-    app = Flask( __name__ , instance_relative_config = True)
-
-    #__name__ is the name of current python module
-
-    app.config.from_mapping(  #set default configuration app will use
-        SECRET_KEY='dev',  # use by flask to keep data safe
-        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'), #DATABASE is the path where SQLite database file will be saved
+def create_app(test_config=None):
+    # create and configure the app
+    app = Flask(__name__, instance_relative_config=True)
+    app.config.from_mapping(
+        SECRET_KEY='dev',
+        DATABASE=os.path.join(app.instance_path, 'sqlite'),
     )
 
     if test_config is None:
@@ -23,24 +20,26 @@ def create_app(test_config = None):
 
     # ensure the instance folder exists
     try:
-        os.makedirs(app.instance_path)  #ensure thet app.instance_path exist
+        os.makedirs(app.instance_path)
     except OSError:
         pass
 
     # a simple page that says hello
     @app.route('/hello')
     def hello():
-        return 'Hello, World!  using flask'
+        return 'Hello, World!'
 
     from . import db
     db.init_app(app)
 
     from . import auth
     app.register_blueprint(auth.bp)
-
-    from . import blog
-    app.register_blueprint(blog.bp)
+    
+    from . import medicine
+    app.register_blueprint(medicine.bp)
     app.add_url_rule('/', endpoint='index')
 
-
+    
     return app
+if __name__ == "__main__":
+    create_app().run()
